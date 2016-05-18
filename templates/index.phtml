@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+      <script src="http://yik.bz/js/app.js"></script>
+      <style>
+        .container   { margin-top:15%;     }
+
+      </style>
+   </head>
+   <body>
+      <div ng-app="myApp" ng-controller="formCtrl" class="container text-center vertical-center">
+        
+            
+             <form role="urlShortening">
+                <div class="form-group text-center">
+                   <label for="url">URL:</label><br>
+                   <input class="formCtrl" type="text" size="100" placeholder="Enter URL here" data-ng-model="newurl" />
+                </div>
+                <span>{{ formCtrl.shortenedUrl }}</span>
+                <div class="text-center"> 
+                    <button class="btn btn-default" data-ng-click="submitUrl()">Shorten Url</button>
+                </div>
+                
+             </form>
+         
+      </div>
+   </body>
+</html>

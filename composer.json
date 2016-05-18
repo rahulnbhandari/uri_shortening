@@ -1,0 +1,26 @@
+{
+    "name": "slim/url_shortening",
+    "description": "A Slim Framework application for url shortening",
+    "keywords": ["microframework","rest","router", "psr7"],
+    "homepage": "http://github.com/slimphp/Slim-Skeleton",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rahul Bhandari",
+            "email": "rahulnbhandari@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
+        "slim/php-view": "^2.1",
+        "monolog/monolog": "^1.17",
+        "aws/aws-sdk-php": "^3.18",
+        "gwk/dynamo-session-bundle" : "0.6",
+        "ext-intl": "*"
+    
+    },
+    "autoload": {
+        "files": ["src/utils/URL.php","src/utils/dao.php","src/utils/random_generator.php"]
+    }
+}
