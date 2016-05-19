@@ -15,3 +15,6 @@ Replace `[my-app-name]` with the desired directory name for your new application
 * Point your virtual host document root to your new application's `public/` directory.
 * Ensure `logs/` is web writeable.
 
+Save aws key credentials in dao wrapper "/src/utils/dao.php" /home/user/.aws/credentials. This is not needed if aws credentials are saved in ~/.aws/credentials
+
+Run php db/schema.php to create dynamo tables
