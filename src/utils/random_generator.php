@@ -2,6 +2,7 @@
 //namespace utils\url_shortening;
 class UUID_GEN {
 
+	const DEFAULT_NUM_DIGITS = 11;
 	public static function random_uuid($num_digits) {
 		return self::convert(substr(number_format(time() * mt_rand(),0,'',''),0,$num_digits));
 	}

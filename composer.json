@@ -2,7 +2,7 @@
     "name": "slim/url_shortening",
     "description": "A Slim Framework application for url shortening",
     "keywords": ["microframework","rest","router", "psr7"],
-    "homepage": "http://github.com/slimphp/Slim-Skeleton",
+    "homepage": "https://github.com/rahulnbhandari/uri_shortening",
     "license": "MIT",
     "authors": [
         {
@@ -21,6 +21,6 @@
     
     },
     "autoload": {
-        "files": ["src/utils/URL.php","src/utils/dao.php","src/utils/random_generator.php"]
+        "files": ["src/utils/URL.php","src/utils/dao.php","src/utils/random_generator.php","src/utils/common.util.php"]
     }
 }

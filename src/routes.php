@@ -5,36 +5,46 @@
 
 //use utils\url_shortening;
 
-$app->post('/url', function ()  use ($app) {
-	$data = file_get_contents("php://input");	
+$app->post('/url', function ($request,$response,$args)  use ($app) {
+    $body = $request->getBody();
+    if($body) {
+        $data = $body->getContents();
+    }
 	$data = json_decode($data,true);
+    $uri = $request->getUri();
+    $host = $uri->getHost();
+    $prot = $uri->getScheme();
     
   
-    try{
+    try {
          $url = new URL($data['url']);
          $url->validate($data['url']);
-         $uuid = UUID_GEN::random_uuid(11);
-         $dao = new Dao("reverse_url_mapper");
-         $url_record['uuid'] = $uuid;
-         $url_record['timstamp'] = date("Y-m-d\TH:i:s\Z");
-         $url_record['url'] = $data['url']; 
-         $result = $dao->put($url_record);
-         if($result) {
-            $message['url'] = $_SERVER["SERVER_NAME"]."/".$result['uuid'];
-        } else {
-            $this->response()->status(400);
-            $message['error'] = "Something went wrong";
-            $message = json_encode($message);
-        }
+       
+         $clientip = CommonUtil::GetClientIpAddress();
+      
+        
          
-         return $message;
+         $url_record['url'] = $data['url'];
+         $url_record['clientip'] = $clientip;
+
+
+         $result = CommonUtil::addUrlMap($url_record);
+         if($result &&  $result[0]['uuid']) {
+            //print_r($result);
+
+            $message['url'] = $prot.'://'.$host."/".$result[0]['uuid'];
+            $response = $response->withJson($message, 201);
+        } else {
+            $message['error'] = "Something went wrong";
+            $response = $response->withJson($message, 400);
+        }
+       
     } catch(InvalidArgumentException $e) {
         $message['error'] = $e->getmessage();
-        $message = json_encode($message);
-        $this->response()->status(400);
-        return $message;
+        $response = $response->withJson($message, 400);
+    } 
 
-    }
+    return $response;
    
    // require("../lib/dao.php");
     //$url = new Dao("reverse_url_mapper");
@@ -42,20 +52,30 @@ $app->post('/url', function ()  use ($app) {
     
 });
 
-$app->get('/{request}', function ($request) {
+$app->get('/{request}', function ($request,$response) {
     $path = $request->getUri()->getPath();
     $path = substr($path, 1);
-    $dao = new Dao("reverse_url_mapper");
+    $dao = new Dao(Entities::URL_TABLE);
+
     $result = $dao->get( $path,"uuid");
+
     if($result['url']) {
-         header("Location: ".$result['url']);
-         $this->logger->info("Slim-url-shortening '/' route ".$result['url']);
-         return
+         //print_r($result);
+         $response = $response->withHeader('cache-control', 'max-age=25900');
+         $clientip = CommonUtil::GetClientIpAddress();
+         $this->logger->info("Slim-url-shortening '/' route $path ".$result['url']." clientip $clientip");
+         return $response->withStatus(302)->withHeader('Location', $result['url']);
+         
     } else {
-         $this->response()->status(400);
+         $message = "<h1>Not Found</h1>
+<p>The requested URL /$path was not found on this server.</p>";
+         $body = $response->getBody();
+         $body->write($message);
+         $response = $response->withStatus(404);
+         $response = $response->withBody($body);
     }
     $this->logger->info("Slim-url-shortening '/' route ");
-    return;
+    return $response;
     
     
 });

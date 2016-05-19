@@ -15,10 +15,7 @@
     /**
      * The regular expression pattern for URL validation.
      *
-     * Please note that the IPv6 regular expression is taken from the Symfony project, see link below.
-     *
-     * @see https://github.com/symfony/Validator/blob/master/Constraints/UrlValidator.php#L34-L36
-     * @see https://tools.ietf.org/html/rfc3986
+  
      * @var string
      */
     const URL_PATTERN = '/^
@@ -70,20 +67,13 @@
      * Note that the hostname is either a real domain with top-level domain (TLD) or an IP address.
      *
      * @see URL::$domain
-     * @see URL::$ipv4
-     * @see URL::$ipv6
-     * @see URL::$tld
+   
      * @var null|string
      */
     public $hostname;
    
     public $path;
-    /**
-     * The port of the URL.
-     *
-     * @var null|string
-     */
-    public $port;
+   
     /**
      * The query of the URL.
      *
@@ -179,7 +169,6 @@
         $this->fragment = null;
         $this->hostname = null;
         $this->path     = null;
-        $this->port     = null;
         $this->query    = null;
         $this->scheme   = null;
         $this->tld      = null;

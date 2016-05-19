@@ -11,6 +11,7 @@ use Aws\DynamoDb\Enum\ComparisonOperator;
 use Aws\DynamoDb\Enum\Type;
 use Aws\Common\Enum\Region;
 use Aws\DynamoDb\Marshaler;
+use Aws\Credentials\CredentialProvider;
 
 
 /**
@@ -19,7 +20,7 @@ use Aws\DynamoDb\Marshaler;
  */
 abstract class Entities
 {
-	const URL_TABLE = 'reverse_url_mapper';
+	const URL_TABLE = 'test';
 
 	protected static $client=NULL;
 	public static $marshaler = NULL;
@@ -29,11 +30,8 @@ abstract class Entities
 			if(!self::$client){
 				self::$client = DynamoDbClient::factory(array(
 					'version' => 'latest',
-					'credentials' => [
-       					 'key' => '',
-						'secret' => '',
-    				],
-					'region' => "us-west-2"
+					 'credentials' => CredentialProvider::ini('default', '/home/user/.aws/credentials'),
+					 'region' => "us-west-2"
 				));
 
 				self::$marshaler = new Marshaler();
@@ -108,13 +106,21 @@ class Dao extends Entities{
     }
 
 
-	public function put($object){
+	public function put($object,$conditionExpression=NULL) {
 		try{
-			$result = self::$client->putItem(array(
+			$put_object = array(
 				'TableName' => $this->_voTableName,
 				'Item' => self::$marshaler->marshalItem($object),
 				'ReturnConsumedCapacity' => 'TOTAL'
-			));
+			);
+
+			
+			if($conditionExpression && isset($conditionExpression['conditionExpression'])) {
+				//$put_object = array_merge($put_object,$conditionExpression);
+			}
+
+			$result = self::$client->putItem($put_object);
+			
 			return $result;
 		}catch(Exception $e){
 			@error_log($this->error($e,"invalid tablename $this->_voTableName"));
@@ -126,14 +132,15 @@ class Dao extends Entities{
 		$queryData = array(
 			'ConsistentRead' => true,
 			'TableName' => $this->_voTableName,
-			'Key' => array(
-				$keyIndex => array('S'=> $value)
-			)
+			'Key' => [
+				"$keyIndex" => ['S'=> "$value"],
+			]
 		);
+	
 		//print_r($queryData);
 		try{
 			$response = self::$client->getItem($queryData);
-
+			
 
 			$formattedResponse = array();
 			if(!empty($response['Item'])) {
@@ -146,8 +153,9 @@ class Dao extends Entities{
 				return array();
 			}
 		}catch(Exception $e){
-			return NULL;
 			@error_log($this->error($e,"invalid get $value $keyIndex"));
+			return NULL;
+			
 		}
 
 		return $formattedResponse;
